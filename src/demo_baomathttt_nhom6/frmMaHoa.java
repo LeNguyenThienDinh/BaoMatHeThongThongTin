@@ -57,6 +57,11 @@ public class frmMaHoa extends javax.swing.JFrame {
         jLabel2.setText("Mời nhập ký tự cần mã hóa:");
 
         giaiMaHoa.setText("Giải mã hóa");
+        giaiMaHoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                giaiMaHoaActionPerformed(evt);
+            }
+        });
 
         MAHOA.setText("Mã hóa");
         MAHOA.addActionListener(new java.awt.event.ActionListener() {
@@ -166,13 +171,13 @@ public class frmMaHoa extends javax.swing.JFrame {
             String encryptedData = null;
 
             if (AES.isSelected()) {
-                String secretKey = "1234567812345678"; // 16 ký tự cho AES
+                String secretKey = "1234567812345678"; // khoa voi 16 ky tu cho AES
                 encryptedData = encryptAES(dataToEncrypt, secretKey);
             } else if (DES.isSelected()) {
-                String secretKey = "12345678"; // 8 ký tự cho DES
+                String secretKey = "12345678"; // Khoa voi 8 ky tu AES
                 encryptedData = encryptDES(dataToEncrypt, secretKey);
             } else if (DES3.isSelected()) {
-                String secretKey = "1234567887654331A1B2C3D4"; // 24 ký tự cho 3DES
+                String secretKey = "1234567887654331A1B2C3D4"; // Khoa voi 24 ky tu cho 3DES
                 encryptedData = encrypt3DES(dataToEncrypt, secretKey);
             } else {
                 JOptionPane.showMessageDialog(this, "Xin hãy chọn 1 trong 3 phương thức mã hóa", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -186,6 +191,10 @@ public class frmMaHoa extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi trong quá trình mã hóa", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_MAHOAActionPerformed
+
+    private void giaiMaHoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_giaiMaHoaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_giaiMaHoaActionPerformed
 
     /**
      * @param args the command line arguments

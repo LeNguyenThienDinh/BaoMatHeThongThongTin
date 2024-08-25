@@ -135,6 +135,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Gi&#x1ea3;i m&#xe3; h&#xf3;a"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="giaiMaHoaActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="MAHOA">
       <Properties>
