@@ -147,6 +147,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Tr&#x1edf; V&#x1ec1; M&#xe3; H&#xf3;a"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
