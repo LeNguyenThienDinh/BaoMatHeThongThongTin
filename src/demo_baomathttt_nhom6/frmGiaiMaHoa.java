@@ -203,16 +203,22 @@ public class frmGiaiMaHoa extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Hãy chọn dữ liệu muốn giải mã.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (!DecryptAES.isSelected()) {
-            JOptionPane.showMessageDialog(this, "Hãy chọn phương pháp giải mã.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+
         String encryptedText = (String) jTable1.getValueAt(selectedRow, 1); 
 
         try {
-            String decryptedText = decryptAES(encryptedText); 
-            KyTuGiaiMa.setText(decryptedText);
-
+            if (DecryptAES.isSelected()) {
+                String decryptedText = decryptAES(encryptedText);
+                KyTuGiaiMa.setText(decryptedText);
+            } else if (DecryptDES.isSelected()) {
+                String decryptedText = decryptDES(encryptedText);
+                KyTuGiaiMa.setText(decryptedText);
+            } else if (Decrypt3DES.isSelected()) {
+                String decryptedText = decrypt3DES(encryptedText);
+                KyTuGiaiMa.setText(decryptedText);
+            } else {
+                JOptionPane.showMessageDialog(this, "Hãy chọn phương pháp giải mã.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi giải mã dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -232,6 +238,36 @@ public class frmGiaiMaHoa extends javax.swing.JFrame {
 
         byte[] decryptedData = cipher.doFinal(decodedData);
         //chuym byte sang chuoi
+        return new String(decryptedData);
+    }
+    private String decryptDES(String encryptedText) throws Exception {
+        String secretKey = "12345678"; 
+
+        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "DES");
+
+        Cipher cipher = Cipher.getInstance("DES");
+
+        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+
+        byte[] decodedData = Base64.getDecoder().decode(encryptedText);
+
+        byte[] decryptedData = cipher.doFinal(decodedData);
+
+        return new String(decryptedData);
+    }
+    private String decrypt3DES(String encryptedText) throws Exception{
+        String secretKey = "1234567887654331A1B2C3D4";
+        
+        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "DESede");
+        
+        Cipher cipher = Cipher.getInstance("DESede");
+        
+        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+        
+        byte[] decodedData = Base64.getDecoder().decode(encryptedText);
+        
+        byte[] decryptedData = cipher.doFinal(decodedData);
+        
         return new String(decryptedData);
     }
     /**
