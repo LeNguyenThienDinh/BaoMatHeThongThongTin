@@ -8,6 +8,10 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.swing.JOptionPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Base64;
 /**
  *
@@ -71,6 +75,11 @@ public class frmMaHoa extends javax.swing.JFrame {
         });
 
         Load_CSDL1.setText("Load_CSDL");
+        Load_CSDL1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Load_CSDL1ActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Ký tự đã được mã hóa như sau:");
 
@@ -199,6 +208,50 @@ public class frmMaHoa extends javax.swing.JFrame {
 
         this.dispose();
     }//GEN-LAST:event_giaiMaHoaActionPerformed
+
+    private void Load_CSDL1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Load_CSDL1ActionPerformed
+        String encryptedText = kydaduocMAHOA.getText();
+
+        if (encryptedText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Không có dữ liệu để tải vào cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String url = "jdbc:oracle:thin:@localhost:1521:xe"; 
+        String username = "C##mahoa"; // Tên người dùng
+        String password = "mahoa123"; // Mật khẩu
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = DriverManager.getConnection(url, username, password);
+
+             String sql = "INSERT INTO MaHoaData (VanBanMaHoa) VALUES (?)";
+
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, encryptedText);
+
+            // Thực thi câu lệnh SQL
+            int rowsInserted = pstmt.executeUpdate();
+
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "Dữ liệu đã được tải thành công vào cơ sở dữ liệu.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi tải dữ liệu vào cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            // Đóng kết nối và tài nguyên
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }//GEN-LAST:event_Load_CSDL1ActionPerformed
 
     /**
      * @param args the command line arguments
