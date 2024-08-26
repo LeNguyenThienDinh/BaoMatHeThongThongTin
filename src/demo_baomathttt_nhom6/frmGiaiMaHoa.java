@@ -3,7 +3,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package demo_baomathttt_nhom6;
-
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JTable;
+import javax.swing.JScrollPane;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.*;
+import java.util.Base64;
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
+import java.util.Arrays;
 /**
  *
  * @author admin
@@ -15,8 +29,49 @@ public class frmGiaiMaHoa extends javax.swing.JFrame {
      */
     public frmGiaiMaHoa() {
         initComponents();
+        loadTableData();
     }
+    private void loadTableData() {
+        String url = "jdbc:oracle:thin:@localhost:1521:xe";
+        String username = "C##mahoa";
+        String password = "mahoa123";
 
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DriverManager.getConnection(url, username, password);
+            String sql = "SELECT STT, VanBanMaHoa FROM MaHoaData";
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+
+            DefaultTableModel model = new DefaultTableModel();
+            model.addColumn("ID");
+            model.addColumn("Encrypted Text");
+
+            while (rs.next()) {
+                int id = rs.getInt("STT");
+                String encryptedText = rs.getString("VanBanMaHoa");
+                model.addRow(new Object[]{id, encryptedText});
+            }
+
+            jTable1.setModel(model);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ cơ sở dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } finally {
+
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -63,6 +118,11 @@ public class frmGiaiMaHoa extends javax.swing.JFrame {
         Decrypt3DES.setText("3DES");
 
         jButton1.setText("Giải Mã");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Trở Về Mã Hóa");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -137,6 +197,43 @@ public class frmGiaiMaHoa extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        int selectedRow = jTable1.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Hãy chọn dữ liệu muốn giải mã.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!DecryptAES.isSelected()) {
+            JOptionPane.showMessageDialog(this, "Hãy chọn phương pháp giải mã.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String encryptedText = (String) jTable1.getValueAt(selectedRow, 1); 
+
+        try {
+            String decryptedText = decryptAES(encryptedText); 
+            KyTuGiaiMa.setText(decryptedText);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi giải mã dữ liệu.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+    private String decryptAES(String encryptedText) throws Exception {
+        String secretKey = "1234567812345678"; 
+ 
+        SecretKeySpec keySpec = new SecretKeySpec(secretKey.getBytes(), "AES");
+
+        Cipher cipher = Cipher.getInstance("AES");
+
+        cipher.init(Cipher.DECRYPT_MODE, keySpec);
+
+        // Chuyen du lieu tu base64 san byte
+        byte[] decodedData = Base64.getDecoder().decode(encryptedText);
+
+        byte[] decryptedData = cipher.doFinal(decodedData);
+        //chuym byte sang chuoi
+        return new String(decryptedData);
+    }
     /**
      * @param args the command line arguments
      */
